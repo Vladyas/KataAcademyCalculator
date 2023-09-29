@@ -55,22 +55,24 @@ public class Main {
     }
     static String convert1_100ToRomans(int inInt, List<String> romanNumerals ){
         StringBuilder resRom = new StringBuilder();
-        if (inInt<100) {
-            if (inInt>=50) {
-                resRom = new StringBuilder("L");
-                inInt -=50;
-            }
-            if (inInt>=10){
-                int decNum = inInt / 10;
-                int i;
-                inInt %=10;
-                for (i=0;i<decNum;i++){
-                    resRom.append("X");}
-            }
-            resRom.append(romanNumerals.get(inInt));
+        if (inInt==100)  { resRom = new StringBuilder("C");
+            inInt -=100;}
+        else if (89 < inInt ) {resRom = new StringBuilder("XC");
+            inInt -=90; }
+        else if (49 < inInt ) {resRom = new StringBuilder("L");
+            inInt -=50; }
+        else if (39 < inInt)  {resRom = new StringBuilder("XL");
+            inInt -=40; }
+
+        if (inInt>=10){
+            int decNum = inInt / 10;
+            int i;
+            inInt %=10;
+            for (i=0;i<decNum;i++){
+                resRom.append("X");}
         }
-        else { resRom = new StringBuilder("C");
-        }
+
+        resRom.append(romanNumerals.get(inInt));
 
         return resRom.toString();
     }
