@@ -14,33 +14,33 @@ public class Main {
         }
     }
     public static String calc(String input) throws CalcException {
-        // Prepare patterns for Arabic notation recognition
         String arithOpers = "\\s*([+-/*])\\s*";
-        String arabNums = "(10|[1-9])";
-        String patternArab = "\\G(" + arabNums + arithOpers + arabNums + ")\\Z";
-        final Pattern patternObjArab = Pattern.compile(patternArab, Pattern.DOTALL);
-        final Matcher matcherObjArab = patternObjArab.matcher(input);
+        // Prepare patterns for Arabic notation recognition
+        String arabicPattern = "(10|[1-9])";
+        arabicPattern = "\\G(" + arabicPattern + arithOpers + arabicPattern + ")\\Z";
+        final Pattern arabicObjPattern = Pattern.compile(arabicPattern, Pattern.DOTALL);
+        final Matcher arabicObjMatcher = arabicObjPattern.matcher(input);
         // Prepare patterns for Roman notation recognition
-        List<String> roms = List.of( "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X");
-        String romNums = String.join("|", roms).substring(1);// Generate regex pattern by roms list
-        String patternRom = "(\\G"  + romNums + arithOpers + romNums + ")\\Z";
-        final Pattern patternObjRom = Pattern.compile(patternRom, Pattern.DOTALL);
-        final Matcher matcherObjRom = patternObjRom.matcher(input);
+        List<String> romanNumerals = List.of( "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X");
+        String romanPattern = "(" + String.join("|", romanNumerals).substring(1) + ")";// Generate regex pattern by romanNumerals list, cut first "|"
+        romanPattern = "\\G("  + romanPattern + arithOpers + romanPattern + ")\\Z";
+        final Pattern romanObjPattern = Pattern.compile(romanPattern, Pattern.DOTALL);
+        final Matcher romanObjMatcher = romanObjPattern.matcher(input);
 
         // recognize notation and solve
-        if (matcherObjArab.find()) { return solverArab(matcherObjArab); }
-        else if (matcherObjRom.find()) { return solverRom(matcherObjRom, roms);}
+        if (arabicObjMatcher.find()) { return arabicSolver(arabicObjMatcher); }
+        else if (romanObjMatcher.find()) { return romanSolver(romanObjMatcher, romanNumerals);}
         else { throw new CalcException("Ошибка ввода!");}
 
     }
-    static String solverArab(Matcher input) {
+    static String arabicSolver(Matcher input) {
         int result = reshalo(Integer.parseInt(input.group(2)) , input.group(3),  Integer.parseInt(input.group(4)));
         return Integer.toString(result);
     }
-    static String solverRom(Matcher input, List<String> roms) throws CalcException{
-        int result = reshalo(roms.indexOf(input.group(2)) ,
-                input.group(3),  roms.indexOf(input.group(4)));
-        if (result>0){return  convert1_100ToRoms(result, roms);}
+    static String romanSolver(Matcher input, List<String> romanNumerals) throws CalcException{
+        int result = reshalo(romanNumerals.indexOf(input.group(2)) ,
+                input.group(3),  romanNumerals.indexOf(input.group(4)));
+        if (result>0){return  convert1_100ToRomans(result, romanNumerals);}
         else {throw new CalcException("В римской записи нет 0 и отрицательных чисел!"); }
     }
     static int reshalo(int first, String operand, int second){
@@ -53,7 +53,7 @@ public class Main {
         }
         return result;
     }
-    static String convert1_100ToRoms(int inInt, List<String> roms ){
+    static String convert1_100ToRomans(int inInt, List<String> romanNumerals ){
         StringBuilder resRom = new StringBuilder();
         if (inInt<100) {
             if (inInt>=50) {
@@ -67,7 +67,7 @@ public class Main {
                 for (i=0;i<decNum;i++){
                     resRom.append("X");}
             }
-            resRom.append(roms.get(inInt));
+            resRom.append(romanNumerals.get(inInt));
         }
         else { resRom = new StringBuilder("C");
         }
